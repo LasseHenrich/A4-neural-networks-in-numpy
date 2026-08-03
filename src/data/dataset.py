@@ -45,13 +45,13 @@ class ArrayDataset(Dataset):
         X: np.ndarray,
         y: np.ndarray,
     ) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if len(X) != len(y):
+            raise ValueError("len(X) != len(y)")
+        self.X = X
+        self.y = y
 
     def __len__(self) -> int:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        return len(self.y)
 
     def __getitem__(self, idx: int) -> tuple[np.ndarray, np.ndarray]:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        return (self.X[idx], self.y[idx])
