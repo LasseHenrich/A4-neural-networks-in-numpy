@@ -41,25 +41,25 @@ j_lr_10_unstable: bool | None = True
 # open results/figures/decision_boundaries.png and answer the following.
 
 k_observations: dict[str, bool | None] = {
-    "stacked_linear_no_activation_stays_straight": None,
-    "all_configs_equal_accuracy_on_xor": None,
-    "linear_model_solves_linear_but_not_xor": None,
-    "relu_encloses_inner_circle": None,
-    "linear_model_separates_moons": None,
-    "large_relu_traces_spiral_arms": None,
-    "relu_boundary_is_piecewise_linear": None,
-    "small_relu_underfits_checkerboard": None,
+    "stacked_linear_no_activation_stays_straight": True,
+    "all_configs_equal_accuracy_on_xor": False,
+    "linear_model_solves_linear_but_not_xor": True,
+    "relu_encloses_inner_circle": True,
+    "linear_model_separates_moons": False,
+    "large_relu_traces_spiral_arms": True,
+    "relu_boundary_is_piecewise_linear": True,
+    "small_relu_underfits_checkerboard": True,
 }
 
 # How many of the six datasets does the no-hidden-layer model solve
 # (test accuracy > 0.90)?
 # Type: int
-k_num_datasets_linear_solves: int | None = None
+k_num_datasets_linear_solves: int | None = 1
 
 # Which is the smallest ReLU architecture that achieves accuracy > 0.75
 # on the checkerboard dataset?
 # Type: str — one of "[4]" / "[16]" / "[64,64]" / "none"
-k_smallest_arch_solving_checkerboard: str | None = None
+k_smallest_arch_solving_checkerboard: str | None = "[64,64]"
 
 
 # ---------------------------------------------------------------------------
