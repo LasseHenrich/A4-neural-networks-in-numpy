@@ -52,8 +52,13 @@ class Dropout(Module):
                     0 <= p < 1
             seed -- optional seed for reproducible mask sampling
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if not (0.0 <= p < 1.0):
+            raise ValueError(f"Dropout probability p must satisfy 0 <= p < 1, got {p}")
+        
+        super().__init__()
+        self.p = p
+        self.rng = np.random.default_rng(seed)
+        self.mask = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -68,8 +73,13 @@ class Dropout(Module):
             rest scaled up by 1 / (1 - p) during training, or x itself
             during evaluation
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if not self.training:
+            return x
+        
+        q = 1 - self.p # keep probability
+        self.mask = (self.rng.random(x.shape) < q) / q
+        
+        return x * self.mask
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -83,5 +93,11 @@ class Dropout(Module):
         Returns:
             gradient of the loss w.r.t. the layer's input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if not self.training:
+            return dout
+        
+        if self.mask is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        return dout * self.mask
+        

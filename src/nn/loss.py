@@ -63,8 +63,9 @@ class CrossEntropy(Module):
     """
 
     def __init__(self) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.probs = None
+        self.y = None
 
     def forward(self, logits: np.ndarray, y: np.ndarray) -> float:
         """
@@ -77,8 +78,18 @@ class CrossEntropy(Module):
         Returns:
             float -- mean cross-entropy loss across the batch
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        B = y.shape[0]
+        
+        max_logits = np.max(logits, axis=1, keepdims=True)
+        q_numerator = np.exp(logits - max_logits)
+        q_denominator = np.sum(a=q_numerator, axis=1, keepdims=True)
+        q = q_numerator / q_denominator
+        
+        self.probs = q
+        self.y = y
+        
+        return -np.mean(np.log(q[np.arange(B), y]))
+        
 
     def backward(self) -> np.ndarray:
         """
@@ -90,8 +101,14 @@ class CrossEntropy(Module):
         Returns:
             (B, C) gradient with respect to the input logits
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.probs is None or self.y is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        B, C = self.probs.shape
+        
+        one_hot = np.eye(C)[self.y]
+        
+        return (self.probs - one_hot) / B
 
 
 class MSE(Module):
@@ -113,8 +130,8 @@ class MSE(Module):
     """
 
     def __init__(self) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.diff = None
 
     def forward(self, pred: np.ndarray, target: np.ndarray) -> float:
         """
@@ -127,8 +144,9 @@ class MSE(Module):
         Returns:
             float -- mean squared error across all elements
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        self.diff = pred - target
+        #L = (1 / N) * sum_i (pred_i - target_i)^2
+        return np.mean(self.diff**2)
 
     def backward(self) -> np.ndarray:
         """
@@ -143,5 +161,8 @@ class MSE(Module):
             gradient with respect to the input prediction, same shape
             as pred
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.diff is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        # dL/dpred_i = (2 / N) * (pred_i - target_i)
+        return (2 / self.diff.size) * self.diff
