@@ -1,0 +1,12 @@
+/results/
+/data/
+/submission.json
+/submission_instructor.json
+/src_student_backup/
+/.reference_mode
+/src_reference/
+/A4-neural-networks-in-numpy/
+/assignment4.zip
+/grader/grader.pyc
+/dist/
+__pycache__
