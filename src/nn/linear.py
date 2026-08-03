@@ -24,6 +24,7 @@ DO NOT MODIFY THE FUNCTION SIGNATURES.
 """
 
 from collections.abc import Iterable
+import math
 
 import numpy as np
 
@@ -58,8 +59,15 @@ class Linear(Module):
             out_features -- number of output features
             seed         -- optional seed for reproducible initialization
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        
+        sigma = math.sqrt(2/in_features)
+        rng = np.random.default_rng(seed)
+        self.W = rng.normal(loc=0, scale=sigma, size=(in_features, out_features))
+        self.b = np.zeros(shape=(out_features,))
+        self.dW = np.zeros_like(self.W)
+        self.db = np.zeros_like(self.b)
+        self.x = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -71,8 +79,11 @@ class Linear(Module):
         Returns:
             (B, out_features) output batch
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+    
+        self.x = x
+        
+        return x @ self.W + self.b
+        
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -89,8 +100,13 @@ class Linear(Module):
             (B, in_features) gradient of the loss w.r.t. the layer's
             input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.x is None:
+            raise RuntimeError("`forward` must be called before")
+        
+        self.dW += self.x.T @ dout
+        self.db += np.sum(dout, axis=0)
+        dx = dout @ self.W.T
+        return dx
 
     def parameters(
         self,

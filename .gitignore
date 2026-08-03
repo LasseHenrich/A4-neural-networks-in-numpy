@@ -10,3 +10,4 @@
 /grader/grader.pyc
 /dist/
 __pycache__
+uv.lock
