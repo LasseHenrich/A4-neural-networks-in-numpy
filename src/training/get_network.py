@@ -327,7 +327,7 @@ def _build_model(config: ExperimentConfig) -> MLP:
         list(config.layer_sizes),
         config.activation,
         dropout=config.dropout,
-        layer_seed=config.seed,
+        seed=config.seed,
     )
     if config.weight_scale != 1.0:
         for layer in model.net.layers:

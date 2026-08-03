@@ -18,18 +18,18 @@ answers into submission.json.
 
 # Which learning rate produced the highest final test accuracy?
 # Type: float - one of 0.01, 0.1, 1.0
-j_best_lr: float | None = None
+j_best_lr: float | None = 1.0
 
 # Did lr = 0.01 fall meaningfully short of the best test accuracy
 # (more than 2 percentage points below) within the 20-epoch budget?
 # Type: bool
-j_lr_001_underfits: bool | None = None
+j_lr_001_underfits: bool | None = True
 
 # Did lr = 1.0 produce a noisy or unstable validation curve compared
 # to lr = 0.1? "Unstable" here means the validation accuracy drops
 # from one epoch to the next at least once during training.
 # Type: bool
-j_lr_10_unstable: bool | None = None
+j_lr_10_unstable: bool | None = True
 
 
 # ---------------------------------------------------------------------------
