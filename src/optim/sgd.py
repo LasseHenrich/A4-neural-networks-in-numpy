@@ -66,5 +66,19 @@ class SGD(Optimizer):
 
     def step(self) -> None:
         """Applies one update step to every parameter."""
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        for i, (param, grad) in enumerate(self.parameters):
+            _grad = grad
+            if self.weight_decay != 0:
+                _grad = grad + self.weight_decay * param
+                
+            if self.momentum != 0:
+                self._velocities[i] *= self.momentum
+                self._velocities[i] += _grad
+            
+            dir = self._velocities[i]
+            if self.nesterov:
+                dir = _grad + self.momentum * self._velocities[i]
+            if self.momentum == 0:
+                dir = _grad
+                
+            param -= self.lr * dir

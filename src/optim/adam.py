@@ -69,5 +69,23 @@ class Adam(Optimizer):
 
     def step(self) -> None:
         """Applies one update step to every parameter."""
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        self.t += 1
+        m_hat_denom = 1 - self.beta1 ** self.t
+        v_hat_denom = 1 - self.beta2 ** self.t
+        for i, (param, grad) in enumerate(self.parameters):
+            m = self._m[i]
+            v = self._v[i]
+            
+            _grad = grad
+            if self.weight_decay != 0:
+                _grad = grad + self.weight_decay * param
+                
+            m *= self.beta1
+            m += (1 - self.beta1) * _grad
+            v *= self.beta2
+            v += (1 - self.beta2) * _grad**2
+            
+            m_hat = m / m_hat_denom
+            v_hat = v / v_hat_denom
+            
+            param -= self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
