@@ -35,8 +35,33 @@ def run_epoch(
     can be reused across training and validation passes and across
     epochs.
     """
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    if optimizer is None:
+        model.eval()
+    else:
+        model.train()
+    
+    if metrics is not None:
+        metrics.reset()
+    
+    total_loss = 0.0
+    n = 0
+    for xb, yb in loader:
+        outputs = model(xb)
+        batch_loss = float(loss_fn(outputs, yb))
+        total_loss += batch_loss * len(xb)        # sample-weighted accumulation
+        n += len(xb)
+        if optimizer is not None:
+            optimizer.zero_grad()
+            doutputs = loss_fn.backward()
+            model.backward(doutputs)
+            optimizer.step()
+        if metrics is not None:
+            metrics.update(outputs, yb)
+            
+    result = { "loss": total_loss / n }
+    if metrics is not None:
+        result |= metrics.compute()
+    return result
 
 
 def train_ffnn(
@@ -91,5 +116,18 @@ def train_ffnn(
         lists of per-epoch values. "train_loss" and "val_loss" are
         always present; additional keys come from each metric's name.
     """
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    history: dict = {}
+    
+    train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, seed=seed)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, seed=seed)
+    
+    for _ in range(epochs):
+        train_result = run_epoch(model=model, loader=train_loader, loss_fn=loss_fn, optimizer=optimizer, metrics=metrics)
+        val_result = run_epoch(model=model, loader=val_loader, loss_fn=loss_fn, metrics=metrics)
+
+        for key, value in train_result.items():
+            history.setdefault(f"train_{key}", []).append(value)
+        for key, value in val_result.items():
+            history.setdefault(f"val_{key}", []).append(value)
+            
+    return history
