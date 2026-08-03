@@ -101,7 +101,7 @@ class Linear(Module):
             input
         """
         if self.x is None:
-            raise RuntimeError("`forward` must be called before")
+            raise RuntimeError("`forward` has not been called yet")
         
         self.dW += self.x.T @ dout
         self.db += np.sum(dout, axis=0)

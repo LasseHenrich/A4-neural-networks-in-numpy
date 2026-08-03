@@ -45,8 +45,8 @@ class ReLU(Module):
     """
 
     def __init__(self) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.mask = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -58,8 +58,8 @@ class ReLU(Module):
         Returns:
             array of the same shape as x with negatives clipped to 0
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        self.mask = x > 0
+        return self.mask * x
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -73,8 +73,12 @@ class ReLU(Module):
         Returns:
             gradient of the loss w.r.t. the layer's input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.mask is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        dadx = self.mask
+        dLdx = dout * dadx # zero at positions where input was non-positive
+        return dLdx
 
 
 class LeakyReLU(Module):
@@ -89,8 +93,9 @@ class LeakyReLU(Module):
     """
 
     def __init__(self, negative_slope: float = 0.01) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.negative_slope = negative_slope
+        self.mask = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -103,8 +108,8 @@ class LeakyReLU(Module):
             array of the same shape as x with non-positive entries
             scaled by the negative slope
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        self.mask = x > 0
+        return np.where(self.mask, x, self.negative_slope * x)
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -118,8 +123,10 @@ class LeakyReLU(Module):
         Returns:
             gradient of the loss w.r.t. the layer's input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.mask is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        return dout * np.where(self.mask, 1.0, self.negative_slope)
 
 
 class GELU(Module):
@@ -136,8 +143,8 @@ class GELU(Module):
     A = 0.044715
 
     def __init__(self) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.x = None
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -149,8 +156,8 @@ class GELU(Module):
         Returns:
             array of the same shape as x
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        self.x = x
+        return 0.5 * x * (1 + np.tanh(self.C * (x + self.A * x**3)))
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -164,5 +171,9 @@ class GELU(Module):
         Returns:
             gradient of the loss w.r.t. the layer's input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        if self.x is None:
+            raise RuntimeError("`forward` has not been called yet")
+        
+        u = self.C * (self.x + self.A * self.x**3)
+        u_prime = self.C * (1 + 3 * self.A * self.x**2)
+        return 0.5 * (1 + np.tanh(u)) + 0.5 * self.x * (1 - np.tanh(u)**2) * u_prime
