@@ -36,8 +36,8 @@ class Sequential(Module):
     """
 
     def __init__(self, layers: list[Module]) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        self.layers = layers
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         """
@@ -49,8 +49,10 @@ class Sequential(Module):
         Returns:
             output of the final layer
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        y = x
+        for layer in self.layers:
+            y = layer(y)
+        return y
 
     def backward(self, dout: np.ndarray) -> np.ndarray:
         """
@@ -63,8 +65,10 @@ class Sequential(Module):
         Returns:
             gradient of the loss w.r.t. the model's input
         """
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        grad = dout
+        for layer in reversed(self.layers):
+            grad = layer.backward(grad)
+        return grad
 
     def parameters(
         self,

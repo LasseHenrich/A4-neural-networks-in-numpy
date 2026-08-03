@@ -26,7 +26,7 @@ def _make_dataset(
 
 
 def _make_model(seed: int = 0) -> MLP:
-    return MLP([4, 8, 3], activation="relu", seed=seed)
+    return MLP([4, 8, 3], activation="relu", layer_seed=seed)
 
 
 # ---------------------------------------------------------------------------

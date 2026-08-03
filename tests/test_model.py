@@ -112,14 +112,14 @@ def test_sequential_empty_raises():
 
 
 def test_mlp_forward_smoke():
-    mlp = MLP([4, 8, 3], activation="relu", seed=0)
+    mlp = MLP([4, 8, 3], activation="relu", layer_seed=0)
     out = mlp.forward(np.zeros((2, 4)))
     assert isinstance(out, np.ndarray)
     assert out.shape == (2, 3)
 
 
 def test_mlp_backward_smoke():
-    mlp = MLP([4, 8, 3], activation="relu", seed=0)
+    mlp = MLP([4, 8, 3], activation="relu", layer_seed=0)
     mlp.forward(np.ones((2, 4)))
     grad = mlp.backward(np.ones((2, 3)))
     assert isinstance(grad, np.ndarray)

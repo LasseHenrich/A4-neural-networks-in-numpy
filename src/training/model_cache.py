@@ -116,7 +116,7 @@ def _build_mlp(config: ExperimentConfig) -> MLP:
         list(config.layer_sizes),
         config.activation,
         dropout=config.dropout,
-        seed=config.seed,
+        layer_seed=config.seed,
     )
 
 

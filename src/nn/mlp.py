@@ -66,8 +66,20 @@ class MLP(Module):
         dropout: float = 0.0,
         seed: int | None = None,
     ) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        super().__init__()
+        if len(layer_sizes) < 2:
+            raise ValueError("layer_sizes has fewer than two elements")
+        
+        layers = []
+        num_linear_layers = len(layer_sizes) - 1
+        for i in range(num_linear_layers-1):
+            layers.append(Linear(layer_sizes[i], layer_sizes[i+1], None if seed is None else seed + i))
+            layers.append(self._ACTIVATION_FACTORIES[activation]())
+            if dropout > 0:
+                layers.append(Dropout(dropout, None if seed is None else seed + len(layer_sizes) + i))
+        final_layer_seed = None if seed is None else seed + num_linear_layers - 1
+        layers.append(Linear(layer_sizes[-2], layer_sizes[-1], final_layer_seed))
+        self.net = Sequential(layers)
 
     def forward(self, x: np.ndarray) -> np.ndarray:
         return self.net.forward(x)
