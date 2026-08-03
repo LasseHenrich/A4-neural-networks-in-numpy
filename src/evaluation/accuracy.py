@@ -43,5 +43,10 @@ def accuracy(y_pred: np.ndarray, y_true: np.ndarray) -> float:
     Returns:
         float -- accuracy in [0, 1]
     """
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    if y_pred.shape != y_true.shape:
+        raise ValueError("y_pred.shape != y_true.shape")
+    if y_pred.size == 0 or y_true.size == 0:
+        raise ValueError("y_pred.size == 0 or y_true.size == 0")
+    
+    N = len(y_pred)
+    return (N - np.count_nonzero(y_pred - y_true)) / N

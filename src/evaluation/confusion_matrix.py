@@ -25,21 +25,27 @@ class ConfusionMatrix(Metric):
         )
 
     def update(self, outputs: np.ndarray, targets: np.ndarray) -> None:
-        # ------ WRITE YOUR CODE HERE ------
-        pass
+        preds = np.argmax(outputs, axis=1)
+        np.add.at(self._matrix, (targets, preds), 1)
 
     def compute(self) -> np.ndarray:
         return self._matrix.copy()
 
 
 def _per_class_precision(cm: np.ndarray) -> np.ndarray:
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    diags = np.diag(cm)
+    col_sums = cm.sum(axis=0)
+    out = np.zeros_like(diags, dtype=np.float64)
+    np.divide(diags, col_sums, out=out, where=col_sums > 0)
+    return out
 
 
 def _per_class_recall(cm: np.ndarray) -> np.ndarray:
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    diags = np.diag(cm)
+    row_sums = cm.sum(axis=1)
+    out = np.zeros_like(diags, dtype=np.float64)
+    np.divide(diags, row_sums, out=out, where=row_sums > 0)
+    return out
 
 
 def accuracy_from_matrix(cm: np.ndarray) -> float:
@@ -72,5 +78,11 @@ def recall(
 
 def f1(cm: np.ndarray, class_label: int | None = None) -> float | np.ndarray:
     """Per-class F1; 0.0 where both precision and recall are zero."""
-    # ------ WRITE YOUR CODE HERE ------
-    pass
+    precision = _per_class_precision(cm)
+    recall = _per_class_recall(cm)
+    per_class = np.zeros_like(precision, dtype=np.float64)
+    denom = precision + recall
+    np.divide(2 * precision * recall, denom, out=per_class, where=denom > 0)
+    if class_label is not None:
+        return float(per_class[class_label])
+    return per_class
